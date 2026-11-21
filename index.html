@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar Viewer</title>
+<style>
+body{font-family:Arial;background:#f5f3ff;padding:20px}
+main{max-width:650px;margin:auto;background:white;padding:25px;border-radius:18px;text-align:center}
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:20px}
+.day{background:#ede9fe;padding:12px 2px;border-radius:7px}
+.today{background:#7c3aed;color:white;font-weight:bold}
+button{background:#7c3aed;color:white;border:0;padding:12px 18px;border-radius:7px;cursor:pointer;margin:5px}
+</style>
+</head>
+<body>
+<main>
+<h1>Calendar Viewer</h1>
+<button onclick="changeMonth(-1)">Previous</button>
+<button onclick="changeMonth(1)">Next</button>
+<button onclick="goToday()">Today</button>
+<h2 id="month"></h2>
+<div class="calendar" id="calendar"></div>
+</main>
+<script>
+const now=new Date();
+let year=now.getFullYear();
+let month=now.getMonth();
+function render(){
+ const grid=document.getElementById("calendar");
+ grid.innerHTML="";
+ document.getElementById("month").textContent=
+ new Date(year,month).toLocaleDateString("en-US",{month:"long",year:"numeric"});
+ ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(name=>{
+  const item=document.createElement("strong");
+  item.textContent=name;
+  grid.appendChild(item);
+ });
+ const first=new Date(year,month,1).getDay();
+ const days=new Date(year,month+1,0).getDate();
+ for(let i=0;i<first;i++){
+  grid.appendChild(document.createElement("div"));
+ }
+ for(let d=1;d<=days;d++){
+  const item=document.createElement("div");
+  item.className="day";
+  item.textContent=d;
+  if(d===now.getDate()&&month===now.getMonth()&&year===now.getFullYear()){
+   item.classList.add("today");
+  }
+  grid.appendChild(item);
+ }
+}
+function changeMonth(step){
+ const date=new Date(year,month+step,1);
+ year=date.getFullYear();
+ month=date.getMonth();
+ render();
+}
+function goToday(){
+ year=now.getFullYear();
+ month=now.getMonth();
+ render();
+}
+render();
+</script>
+</body>
+</html>
