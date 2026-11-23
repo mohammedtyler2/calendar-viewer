@@ -2,64 +2,61 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Calendar Viewer</title>
 <style>
-body{font-family:Arial;background:#f5f3ff;padding:20px}
-main{max-width:650px;margin:auto;background:white;padding:25px;border-radius:18px;text-align:center}
-.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:20px}
-.day{background:#ede9fe;padding:12px 2px;border-radius:7px}
-.today{background:#7c3aed;color:white;font-weight:bold}
-button{background:#7c3aed;color:white;border:0;padding:12px 18px;border-radius:7px;cursor:pointer;margin:5px}
+body{font-family:Arial;background:#f5f3ff;padding:25px}
+main{max-width:500px;margin:auto;background:white;padding:22px;border-radius:15px}
+.header{display:flex;justify-content:space-between;align-items:center}
+button{padding:9px 13px;background:#7c3aed;color:white;border:0;border-radius:6px;cursor:pointer}
+#calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:20px}
+.day{text-align:center;padding:12px 2px;background:#ede9fe;border-radius:6px}
+.today{background:#7c3aed;color:white}
 </style>
 </head>
 <body>
 <main>
 <h1>Calendar Viewer</h1>
+<div class="header">
 <button onclick="changeMonth(-1)">Previous</button>
+<h3 id="month"></h3>
 <button onclick="changeMonth(1)">Next</button>
-<button onclick="goToday()">Today</button>
-<h2 id="month"></h2>
-<div class="calendar" id="calendar"></div>
+</div>
+<div id="calendar"></div>
 </main>
 <script>
-const now=new Date();
-let year=now.getFullYear();
-let month=now.getMonth();
+let current=new Date();
 function render(){
+ const year=current.getFullYear();
+ const month=current.getMonth();
+ document.getElementById("month").textContent=
+ current.toLocaleString("en",{month:"long",year:"numeric"});
  const grid=document.getElementById("calendar");
  grid.innerHTML="";
- document.getElementById("month").textContent=
- new Date(year,month).toLocaleDateString("en-US",{month:"long",year:"numeric"});
- ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(name=>{
-  const item=document.createElement("strong");
-  item.textContent=name;
-  grid.appendChild(item);
+ ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d=>{
+  const el=document.createElement("div");
+  el.className="day";
+  el.textContent=d;
+  grid.appendChild(el);
  });
  const first=new Date(year,month,1).getDay();
- const days=new Date(year,month+1,0).getDate();
+ const total=new Date(year,month+1,0).getDate();
  for(let i=0;i<first;i++){
   grid.appendChild(document.createElement("div"));
  }
- for(let d=1;d<=days;d++){
-  const item=document.createElement("div");
-  item.className="day";
-  item.textContent=d;
-  if(d===now.getDate()&&month===now.getMonth()&&year===now.getFullYear()){
-   item.classList.add("today");
+ for(let d=1;d<=total;d++){
+  const el=document.createElement("div");
+  el.className="day";
+  el.textContent=d;
+  const today=new Date();
+  if(d===today.getDate()&&month===today.getMonth()&&year===today.getFullYear()){
+   el.classList.add("today");
   }
-  grid.appendChild(item);
+  grid.appendChild(el);
  }
 }
 function changeMonth(step){
- const date=new Date(year,month+step,1);
- year=date.getFullYear();
- month=date.getMonth();
- render();
-}
-function goToday(){
- year=now.getFullYear();
- month=now.getMonth();
+ current.setMonth(current.getMonth()+step);
  render();
 }
 render();
